@@ -1,11 +1,11 @@
 <?php
 /**
 * Plugin Name: WooCommerce Sales Counter
-* Plugin URI: #
+* Plugin URI: https://github.com/lucifermani21/woo-sale-counter.git
 * Description: WooCommerce sale counter or timer for products.
 * Version: 1.0.2
 * Author: Manpreet Singh
-* Author URI: #
+* Author URI: https://github.com/lucifermani21/woo-sale-counter.git
 **/
 
 if ( ! defined( 'ABSPATH' ) ) {
