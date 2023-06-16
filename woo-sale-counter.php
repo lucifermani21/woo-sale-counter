@@ -1,4 +1,5 @@
 <?php
+
 /**
 * Plugin Name: WooCommerce Sales Counter
 * Plugin URI: https://github.com/lucifermani21/woo-sale-counter.git
@@ -19,6 +20,9 @@ define( 'WSALE_EDITING__DIR', plugin_dir_path( __FILE__ ) );
 define( 'WSALE_SETTING_PLUGIN', __FILE__ );
 define( 'WSALE_SETTING_PLUGIN_BASENAME', plugin_basename( WSALE_SETTING_PLUGIN ) );
 
-if ( class_exists( 'WOO_SALES_COUNTER' ) && class_exists( 'WooCommerce') ) {
+if( !class_exists( 'WOO_SALES_COUNTER'. false ) ) {
     require_once WSALE_EDITING__DIR .  '/include/class-sale_hooks.php';
+    require_once WSALE_EDITING__DIR .  '/include/class-sale_variables.php';
 }
+$obj = new WOO_SALES_COUNTER();
+add_action( 'init',  array($obj, "init") );
