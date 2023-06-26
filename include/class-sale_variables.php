@@ -4,10 +4,11 @@ if( class_exists( 'WOO_SALES_COUNTER_VAR' ). true ){
     class WOO_SALES_COUNTER_VAR extends WOO_SALES_COUNTER{
 		
 		public function product_hooks(){
-			add_action('woocommerce_before_add_to_cart_form', array( $this, 'get_sale_var' ) );			
+			add_action('woocommerce_before_add_to_cart_form', array( $this, 'MS_sale_counter_shop_detail_page' ) );
+			add_action( 'woocommerce_after_shop_loop_item', array( $this, 'MS_sale_loop_add_to_cart' ), 10 );
 		}
 		
-		public function get_sale_var(){
+		public function MS_sale_counter_shop_detail_page(){
 			global $post;
 			$meta_data = array(
 				'meta_enable_sale' => get_post_meta($post->ID, "_input_checkbox_enable_sale_timer", true),
@@ -15,43 +16,47 @@ if( class_exists( 'WOO_SALES_COUNTER_VAR' ). true ){
 				'meta_sale_time' => get_post_meta($post->ID, "_input_sale_timer_time", true),
 				'meta_sale_message' => get_post_meta($post->ID, "_input_sale_timer_textarea", true),
 			);
-			//var_dump($meta_data[ 'meta_sale_time' ]);
-			
-			if( $meta_data[ 'meta_enable_sale' ] == 'yes' ){
-				echo "<div id='sale_counter'></div>";
+			$meta_enable_sale = $meta_data[ 'meta_enable_sale' ];
+			if( $meta_enable_sale == 'yes' ){
+				$end_date = ( $meta_data[ 'meta_sale_date' ] ) ? $meta_data[ 'meta_sale_date' ] : '0000-00-00 ';
+				$end_time = ( $meta_data[ 'meta_sale_time' ] ) ? $meta_data[ 'meta_sale_time' ] : '00:00:00';
+				echo '<div class="countdown" data-sale="'. $end_date.' '.$end_time .'">
+							<p><span id="days"></span></p>
+							<p><span id="hours"></span></p>
+							<p><span id="minutes"></span></p>
+							<p><span id="seconds"></span></p>
+						</div>';			
+				$meta_sale_message = $meta_data[ 'meta_sale_message' ];
+				if( !empty( $meta_sale_message ) ){
+					echo '<hr/><div class="Sale_Message">'.$meta_sale_message.'</div><hr/>';
+				}
 			}
-			?>
-			<script>
-			// Set the date we're counting down to
-			var countDownDate = new Date("<?php echo $meta_data[ 'meta_sale_date' ];?> 15:37:25").getTime();
-
-			// Update the count down every 1 second
-			var x = setInterval(function() {
-
-			  // Get today's date and time
-			  var now = new Date().getTime();
-
-			  // Find the distance between now and the count down date
-			  var distance = countDownDate - now;
-
-			  // Time calculations for days, hours, minutes and seconds
-			  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-			  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-			  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-			  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-			  // Display the result in the element with id="demo"
-			  document.getElementById("sale_counter").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-
-			  // If the count down is finished, write some text
-			  if (distance < 0) {
-				clearInterval(x);
-				document.getElementById("sale_counter").innerHTML = "EXPIRED";
-			  }
-			}, 1000);
-			</script>			
-			<?php
-		}		
+		}
+		
+		public function MS_sale_loop_add_to_cart(){
+			global $post;
+			$meta_data = array(
+				'meta_enable_sale' => get_post_meta($post->ID, "_input_checkbox_enable_sale_timer", true),
+				'meta_sale_date' => get_post_meta($post->ID, "_input_sale_timer_date", true),
+				'meta_sale_time' => get_post_meta($post->ID, "_input_sale_timer_time", true),
+				'meta_sale_message' => get_post_meta($post->ID, "_input_sale_timer_textarea", true),
+			);
+			$meta_enable_sale = $meta_data[ 'meta_enable_sale' ];
+			if( $meta_enable_sale == 'yes' ){
+				$end_date = ( $meta_data[ 'meta_sale_date' ] ) ? $meta_data[ 'meta_sale_date' ] : '0000-00-00 ';
+				$end_time = ( $meta_data[ 'meta_sale_time' ] ) ? $meta_data[ 'meta_sale_time' ] : '00:00:00';
+				echo '<div class="countdown" data-sale="'. $end_date.' '.$end_time .'">
+						  <p><span id="days"></span></p>
+						  <p><span id="hours"></span></p>
+						  <p><span id="minutes"></span></p>
+						  <p><span id="seconds"></span></p>
+					</div>';			
+				$meta_sale_message = $meta_data[ 'meta_sale_message' ];
+				if( !empty( $meta_sale_message ) ){
+					echo '<hr/><div class="Sale_Message">'.$meta_sale_message.'</div><hr/>';
+				}
+			}
+		}
     }	
 }    
 $obj = new WOO_SALES_COUNTER_VAR();

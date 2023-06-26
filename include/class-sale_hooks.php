@@ -5,9 +5,10 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
         function __construct(){
             add_action( 'admin_head', array( $this, 'MS_admin_sale_timer_CSS' ) );
             add_filter( 'woocommerce_product_data_tabs', array( $this, 'MS_custom_sales_counter_tab' ), 99 , 1 );
+			add_action( 'wp_footer', array( $this, 'MS_js_code_sale_counter' ) );
 	    }
 		
-		function init(){
+		function init(){			
             add_action( 'woocommerce_product_data_panels', array( $this, 'MS_add_sale_timer_product_data_fields' ) );
             add_action( 'woocommerce_process_product_meta', array( $this, 'MS_sale_timer_product_meta_fields_save' ) );
 	    }
@@ -21,7 +22,7 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
 				.sale-counter_options a::before {content: "\f469" !important;}
 			</style>';
         }
-
+		
         public function MS_custom_sales_counter_tab( $product_data_tabs ) {
             $product_data_tabs['sale-counter'] = array(
                 'label' => __( 'Sale Timer', WSALE_SETTING_TEXT_DOMAIN ),
@@ -31,7 +32,6 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
         }
         public function MS_add_sale_timer_product_data_fields() {     
             global $post;
-                   
             echo '<div id="products_sale_counter_date_and_timer" class="panel woocommerce_options_panel">';            
 					# Checkbox field
 					woocommerce_wp_checkbox( array(
@@ -80,24 +80,34 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
             global $post;
             $post_id = $post->ID;
 			$enable_sale_option = $_POST['_input_checkbox_enable_sale_timer'];
-            if( isset( $enable_sale_option ) )
-                update_post_meta( $post_id, '_input_checkbox_enable_sale_timer', esc_attr( $enable_sale_option ) );
-			else
+            if( isset( $enable_sale_option ) ){
+				update_post_meta( $post_id, '_input_checkbox_enable_sale_timer', esc_attr( $enable_sale_option ) );
+			} else {
 				update_post_meta( $post_id, '_input_checkbox_enable_sale_timer', 0 );
-            
+			}
+			
             $sale_date = $_POST['_input_sale_timer_date'];
-            if( isset( $sale_date ) )
-                update_post_meta( $post_id, '_input_sale_timer_date', esc_attr( $sale_date ) );
-    
+            if( isset( $sale_date ) ){
+				update_post_meta( $post_id, '_input_sale_timer_date', esc_attr( $sale_date ) );
+			}
+			
             $sale_time = $_POST['_input_sale_timer_time'];
-            if( isset( $sale_time ) )
-                update_post_meta( $post_id, '_input_sale_timer_time', esc_attr( $sale_time ) );
+            if( isset( $sale_time ) ){
+				update_post_meta( $post_id, '_input_sale_timer_time', esc_attr( $sale_time ) );
+			}                
 
             $sale_textarea = $_POST['_input_sale_timer_textarea'];
-            if( isset( $sale_textarea ) )
-                update_post_meta( $post_id, '_input_sale_timer_textarea', esc_attr( $sale_textarea ) );
-    
+            if( isset( $sale_textarea ) ){
+				update_post_meta( $post_id, '_input_sale_timer_textarea', esc_attr( $sale_textarea ) );
+			}
         }
+		
+		function MS_js_code_sale_counter(){
+			//$version  = date("ymd-Gis", filemtime( plugin_dir_path( __FILE__ ) . 'js/custom.js' ));
+			$version  = WSALE_SETTING_VERSION;
+			wp_enqueue_script( 'sale-timer-script', plugins_url( 'js/sale_counter.js', __FILE__ ), array(), $version );
+		}
+		
         function activation(){
             flush_rewrite_rules();
 		}
