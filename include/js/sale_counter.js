@@ -1,8 +1,8 @@
 function sale_countdown(){
-	$(".countdown").each(function() {
-		var endtimer = $(this).attr("data-sale");
+	jQuery(".countdown").each(function() {
+		var endtimer = jQuery(this).attr("data-sale");
 		var countDownDate = new Date( endtimer ).getTime();
-		var $this = $(this);
+		var $this = jQuery(this);
 		var x = setInterval(function() {
 			var now = new Date().getTime();
 			var distance = countDownDate - now;
