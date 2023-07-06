@@ -1,3 +1,6 @@
+jQuery(document).ready( function () {
+	sale_countdown();
+});
 function sale_countdown(){
 	jQuery(".countdown").each(function() {
 		var endtimer = jQuery(this).attr("data-sale");
@@ -13,9 +16,8 @@ function sale_countdown(){
 			$this.text( `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds` );
 			if (distance < 0) {
 				clearInterval(x);
-				$this.text( "The Sale time is over." );
+				$this.text('');
 			}
 			}, 1000);
 	});	
 };
-sale_countdown();

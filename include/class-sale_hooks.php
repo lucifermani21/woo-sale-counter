@@ -2,6 +2,11 @@
 
 if( class_exists( 'WOO_SALES_COUNTER' ). true ){
     class WOO_SALES_COUNTER{
+		
+		private $post_id = '';
+		private $product_id = '';
+		private $get_data = '';
+		
         function __construct(){
             add_action( 'admin_head', array( $this, 'MS_admin_sale_timer_CSS' ) );
             add_filter( 'woocommerce_product_data_tabs', array( $this, 'MS_custom_sales_counter_tab' ), 99 , 1 );
@@ -23,6 +28,12 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
 			</style>';
         }
 		
+		public function get_meta_post_id(){
+			global $post;
+			$this->post_id = $post;
+			return $this->post_id;
+		}		
+		
         public function MS_custom_sales_counter_tab( $product_data_tabs ) {
             $product_data_tabs['sale-counter'] = array(
                 'label' => __( 'Sale Timer', WSALE_SETTING_TEXT_DOMAIN ),
@@ -32,6 +43,7 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
         }
         public function MS_add_sale_timer_product_data_fields() {     
             global $post;
+			
             echo '<div id="products_sale_counter_date_and_timer" class="panel woocommerce_options_panel">';            
 					# Checkbox field
 					woocommerce_wp_checkbox( array(
@@ -77,8 +89,7 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
         }
 
         public function MS_sale_timer_product_meta_fields_save( $post_id ){
-            global $post;
-            $post_id = $post->ID;
+            $post_id = $this->get_meta_post_id()->ID;
 			$enable_sale_option = $_POST['_input_checkbox_enable_sale_timer'];
             if( isset( $enable_sale_option ) ){
 				update_post_meta( $post_id, '_input_checkbox_enable_sale_timer', esc_attr( $enable_sale_option ) );
@@ -101,6 +112,17 @@ if( class_exists( 'WOO_SALES_COUNTER' ). true ){
 				update_post_meta( $post_id, '_input_sale_timer_textarea', esc_attr( $sale_textarea ) );
 			}
         }
+		
+		public function get_meta_array_data(){
+			$get_post_id = $this->get_meta_post_id()->ID;
+			$this->get_data = array(
+				'meta_enable_sale' => get_post_meta( $get_post_id , "_input_checkbox_enable_sale_timer", true),
+				'meta_sale_date' => get_post_meta( $get_post_id , "_input_sale_timer_date", true),
+				'meta_sale_time' => get_post_meta( $get_post_id , "_input_sale_timer_time", true),
+				'meta_sale_message' => get_post_meta( $get_post_id , "_input_sale_timer_textarea", true),
+			);
+			return $this->get_data;
+		}
 		
 		function MS_js_code_sale_counter(){
 			//$version  = date("ymd-Gis", filemtime( plugin_dir_path( __FILE__ ) . 'js/custom.js' ));
